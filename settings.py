@@ -25,7 +25,12 @@ TIME_ZONE = 'America/Chicago'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = (
+  ('en', 'English'),
+  ('de', 'German'),
+)
 
 SITE_ID = 1
 
@@ -58,9 +63,12 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = 'django_bookmarks.urls'
@@ -81,3 +89,11 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = '/login/'
+
+SITE_HOST = '127.0.0.1:8000'
+DEFAULT_FROM_EMAIL = \
+  'Django Bookmarks <django.bookmarks@example.com>'
+EMAIL_HOST = 'mail.yourisp.com'
+EMAIL_PORT = ''
+EMAIL_HOST_USER = 'username'
+EMAIL_HOST_PASSWORD = 'password'

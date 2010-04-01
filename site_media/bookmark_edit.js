@@ -20,7 +20,8 @@ function bookmark_save() {
   var data = {
     url: item.find("#id_url").val(),
     title: item.find("#id_title").val(),
-    tags: item.find("#id_tags").val()
+    tags: item.find("#id_tags").val(),
+    share: item.find("#id_share").val()
   };
   $.post("/save/?ajax", data, function (result) {
      if (result != "failure") {

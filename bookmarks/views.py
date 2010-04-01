@@ -22,6 +22,10 @@ ITEMS_PER_PAGE = 4
 
 import smtplib
 
+from django.utils.translation import ugettext as _
+
+from django.views.decorators.cache import cache_page
+
 def main_page(request):
     shared_bookmarks = SharedBookmark.objects.order_by(
                                                        '-date'
@@ -146,6 +150,11 @@ def bookmark_save_page(request):
                                             user=request.user
                                             )
             title = bookmark.title
+            share = True
+            try:
+                share = SharedBookmark.objects.get(bookmark=bookmark)
+            except SharedBookmark.DoesNotExist:
+                share = False
             tags = ' '.join(
                             tag.name for tag in bookmark.tag_set.all()
                             )
@@ -154,7 +163,8 @@ def bookmark_save_page(request):
         form = BookmarkSaveForm({
                                 'url': url,
                                 'title': title,
-                                'tags': tags
+                                'tags': tags,
+                                'share': share
                                 })
     else:
         form = BookmarkSaveForm()
@@ -183,6 +193,7 @@ def tag_page(request, tag_name):
                                })
     return render_to_response('tag_page.html', variables)
 
+@cache_page(60 * 15)
 def tag_cloud_page(request):
     MAX_WEIGHT = 5
     tags = Tag.objects.order_by('name')
@@ -260,9 +271,9 @@ def _bookmark_save(request, form):
         shared, created = SharedBookmark.objects.get_or_create(
             bookmark=bookmark
         )
-    if created:
-        shared.users_voted.add(request.user)
-        shared.save()
+        if created:
+            shared.users_voted.add(request.user)
+            shared.save()
     # Save bookmark to database and return it.
     bookmark.save()
     return bookmark
@@ -376,13 +387,13 @@ def friend_invite(request):
             try:
                 invitation.send()
                 request.user.message_set.create(
-                    message=u'An invitation was sent to %s.' %
+                    message=_(u'An invitation was sent to %s.') %
                         invitation.email
                     )
             except smtplib.SMTPException:
                 request.user.message_set.create(
-                    message=u'An error happened when '
-                    u'sending the invitation.'
+                    message=_(u'An error happened when '
+                    u'sending the invitation.')
                 )
             return HttpResponseRedirect('/friend/invite/')
     else:

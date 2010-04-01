@@ -63,4 +63,7 @@ urlpatterns = patterns('',
     # Site media
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': site_media}),
+
+    # i18n
+    (r'^i18n/', include('django.conf.urls.i18n')),
 )

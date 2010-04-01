@@ -84,4 +84,3 @@ class Invitation(models.Model):
 
 
 
-

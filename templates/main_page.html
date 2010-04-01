@@ -8,8 +8,9 @@
 {% endblock %}
 
 {%  block content %}
+{% load bookmarks_filters %}
    {% if user.username %}
-     <p>Welcome {{ user.username }}!
+     <p>Welcome {{ user.username|capitalize }}!
        Here you can store and share bookmarks!</p>
    {% else %}
      <p>Welcome anonymous user!
